@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>
+		Consumo diario
+	</title>
+	<link rel="stylesheet" href="index.css"/>
+	<link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+	<script>
+		
+		function Delete(e){
+			let items = [];
+			JSON.parse(localStorage.getItem('items')).map(data=>{
+				if(data.id != e.parentElement.parentElement.children[0].textContent){
+					
+					items.push(data);
+
+				}
+			});
+			localStorage.setItem('items',JSON.stringify(items));
+			window.location.reload();
+		};
+	</script>
+</head>
+<body>
+	<div class="main">
+		<header id="header" class="header">
+			<h1>Articulos de consumo diario</h1>
+			<div class="iconShopping">
+				<p>0</p>
+				<i class="fa fa-shopping-cart"></i>
+			</div>
+		</header>
+		<div class="itemsBox">
+			<div class="item">
+				<img src="https://m.media-amazon.com/images/I/71c4prQcTbL._AC_UL480_FMwebp_QL65_.jpg" alt="Men's Solid Regular Fit T-Shirt"/>
+				<div class="itemInfo">
+					<h1>Men's Solid Regular Fit T-Shirt</h1>
+					<p>Q<span>42.50</span></p>
+					<a href="#" title="add to cart" class="attToCart">Comprar</a>
+				</div>
+			</div>
+			<div class="item">
+				<img src="https://m.media-amazon.com/images/I/71Zc8O9GW7L._AC_UL480_FMwebp_QL65_.jpg"/>
+				<div class="itemInfo">
+					<h1>SARAF SURGEON MASK SET OF 5</h1>
+					<p>Q<span>15.50</span></p>
+					<a href="#" title="add to cart" class="attToCart">Comprar</a>
+				</div>
+			</div>
+			<div class="item">
+				<img src="https://m.media-amazon.com/images/I/61+7aqLHBoL._AC_UL480_FMwebp_QL65_.jpg"/>
+				<div class="itemInfo">
+					<h1>Men's Black Footwear UK</h1>
+					<p>Q<span>100.50</span></p>
+					<a href="#" title="add to cart" class="attToCart">Comprar</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="cartBox">
+		<div class="cart">
+			<i class="fa fa-close"></i>
+			<h1>Carrito</h1>
+			<table></table>
+		</div>
+	</div>
+	<script src="index.js"></script>
+</body>
+</html>
+window.onload = function(){
+	const iconShopping = document.querySelector('.iconShopping');
+	const cartCloseBtn = document.querySelector('.fa-close');
+	const cartBox = document.querySelector('.cartBox');
+	iconShopping.addEventListener("click",function(){
+		cartBox.classList.add('active');
+	});
+	cartCloseBtn.addEventListener("click",function(){
+		cartBox.classList.remove('active');
+	});
+
+
+	const attToCartBtn = document.getElementsByClassName('attToCart');
+	let items = [];
+	for(let i=0; i<attToCartBtn.length; i++){
+		attToCartBtn[i].addEventListener("click",function(e){
+			if(typeof(Storage) !== 'undefined'){
+				let item = {
+						id:i+1,
+						name:e.target.parentElement.children[0].textContent,
+						price:e.target.parentElement.children[1].children[0].textContent,
+						no:1
+					};
+				if(JSON.parse(localStorage.getItem('items')) === null){
+					items.push(item);
+					localStorage.setItem("items",JSON.stringify(items));
+					window.location.reload();
+				}else{
+					const localItems = JSON.parse(localStorage.getItem("items"));
+					localItems.map(data=>{
+						if(item.id == data.id){
+							item.no = data.no + 1;
+						}else{
+							items.push(data);
+						}
+					});
+					items.push(item);
+					localStorage.setItem('items',JSON.stringify(items));
+					window.location.reload();
+				}
+			}else{
+				alert('local storage is not working on your browser');
+			}
+		});
+	}
+
+	const iconShoppingP = document.querySelector('.iconShopping p');
+	let no = 0;
+	JSON.parse(localStorage.getItem('items')).map(data=>{
+		no = no+data.no
+;	});
+	iconShoppingP.innerHTML = no;
+
+
+	const cardBoxTable = cartBox.querySelector('table');
+	let tableData = '';
+	tableData += '<tr><th>S no.</th><th>Item Name</th><th>Item No</th><th>item Price</th><th></th></tr>';
+	if(JSON.parse(localStorage.getItem('items'))[0] === null){
+		tableData += '<tr><td colspan="5">No items found</td></tr>'
+	}else{
+		JSON.parse(localStorage.getItem('items')).map(data=>{
+			tableData += '<tr><th>'+data.id+'</th><th>'+data.name+'</th><th>'+data.no+'</th><th>'+data.price+'</th><th><a href="#" onclick=Delete(this);>Eliminarr</a></th></tr>';
+		});
+	}
+	cardBoxTable.innerHTML = tableData;
+}
